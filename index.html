@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pranay Jain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: #141414;
+      --bg-card-hover: #1a1a1a;
+      --text: #f0ece4;
+      --text-muted: #9a9590;
+      --accent: #c8a96e;
+      --accent-dim: #a08550;
+      --border: #2a2a2a;
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Inter', -apple-system, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Sticky Header: Name + Timeline */
+    .sticky-header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(10, 10, 10, 0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transform: translateY(-100%);
+      transition: transform 0.4s ease;
+    }
+
+    .sticky-header.visible { transform: translateY(0); }
+
+    .sticky-header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 2rem;
+    }
+
+    .sticky-logo {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Sticky Timeline Bar */
+    .sticky-timeline {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      position: relative;
+      height: 100%;
+    }
+
+    .sticky-timeline-track {
+      position: absolute;
+      top: 12px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--border);
+      z-index: 0;
+    }
+
+    .sticky-timeline-progress {
+      position: absolute;
+      top: 12px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--accent);
+      transform: translateY(-50%);
+      z-index: 0;
+      transition: width 0.15s linear;
+    }
+
+    .st-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      flex: 1;
+      position: relative;
+      z-index: 2;
+      padding: 0.5rem 0;
+      cursor: pointer;
+    }
+
+    .st-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      transition: all 0.3s;
+      margin-bottom: 0.3rem;
+      position: relative;
+      z-index: 3;
+    }
+
+    .st-node:hover .st-dot,
+    .st-node.active .st-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: scale(1.3);
+    }
+
+    .st-age {
+      font-size: 0.55rem;
+      color: var(--accent-dim);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      transition: color 0.3s;
+      line-height: 1;
+      position: relative;
+      z-index: 3;
+    }
+
+    .st-label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+      transition: color 0.3s;
+      line-height: 1.2;
+      position: relative;
+      z-index: 3;
+    }
+
+    .st-node:hover .st-label,
+    .st-node.active .st-label { color: var(--accent); }
+    .st-node:hover .st-age,
+    .st-node.active .st-age { color: var(--accent); }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 40%, rgba(200, 169, 110, 0.06) 0%, transparent 70%);
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: 900px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-bio {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .hero-bio h1 {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 7vw, 5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-bio p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.85;
+    }
+
+    /* Hero Timeline (big version) */
+    .timeline-nav {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+      max-width: 750px;
+      position: relative;
+    }
+
+    .timeline-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--border);
+      transform: translateY(-50%);
+      z-index: 0;
+    }
+
+    .timeline-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      flex: 1;
+      position: relative;
+      z-index: 1;
+      padding: 0 0.25rem;
+    }
+
+    .timeline-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--accent-dim);
+      margin-bottom: 0.8rem;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+    }
+
+    .timeline-node:hover .timeline-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: scale(1.4);
+    }
+
+    .timeline-age {
+      font-size: 0.68rem;
+      font-weight: 400;
+      color: var(--accent-dim);
+      margin-bottom: 0.2rem;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      transition: color 0.3s;
+    }
+
+    .timeline-node:hover .timeline-age { color: var(--accent); }
+
+    .timeline-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.3s;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .timeline-node:hover .timeline-label { color: var(--accent); }
+
+    .hero-scroll {
+      display: inline-block;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-top: 3.5rem;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+
+    /* Sections */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 8rem 2rem;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .section-text {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      line-height: 1.85;
+      margin-bottom: 3rem;
+    }
+
+    .section-aside {
+      font-size: 0.92rem;
+      color: var(--accent-dim);
+      font-style: italic;
+      max-width: 700px;
+      line-height: 1.7;
+      margin-top: -2rem;
+      margin-bottom: 3rem;
+      padding-left: 1rem;
+      border-left: 2px solid var(--border);
+    }
+
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: var(--accent);
+      margin: 0 auto 6rem;
+    }
+
+    /* Media Grid */
+    .media-grid {
+      display: grid;
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .media-grid.two-col { grid-template-columns: 1fr 1fr; }
+    .media-grid.three-col { grid-template-columns: 1fr 1fr 1fr; }
+    .media-grid.single { grid-template-columns: 1fr; max-width: 700px; }
+    .media-grid.two-one { grid-template-columns: 2fr 1fr; }
+
+    .media-item {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      transition: transform 0.4s ease, border-color 0.4s ease;
+    }
+
+    .media-item:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-dim);
+    }
+
+    .media-item img, .media-item video {
+      width: 100%;
+      display: block;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+    }
+
+    .media-item.portrait img, .media-item.portrait video {
+      aspect-ratio: 3/4;
+    }
+
+    .media-item.wide img, .media-item.wide video {
+      aspect-ratio: 16/9;
+    }
+
+    .media-item.auto img, .media-item.auto video {
+      aspect-ratio: auto;
+      max-height: 550px;
+      object-fit: contain;
+      background: var(--bg-card);
+    }
+
+    .media-item.small {
+      max-width: 420px;
+    }
+
+    .media-caption {
+      padding: 1rem 1.2rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      border-top: 1px solid var(--border);
+    }
+
+    .media-item.span-2 { grid-column: span 2; }
+
+    /* Quote Block */
+    .quote-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 12px;
+      padding: 2.5rem 3rem;
+      margin: 3rem 0;
+      position: relative;
+    }
+
+    .quote-block::before {
+      content: '\201C';
+      font-family: var(--serif);
+      font-size: 5rem;
+      color: var(--accent);
+      opacity: 0.3;
+      position: absolute;
+      top: 0.5rem;
+      left: 1.5rem;
+      line-height: 1;
+    }
+
+    .quote-block p {
+      font-size: 1.02rem;
+      color: var(--text-muted);
+      line-height: 1.85;
+      position: relative;
+    }
+
+    .quote-block .quote-author {
+      margin-top: 1.5rem;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.95rem;
+    }
+
+    /* Highlight Cards */
+    .highlights {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin: 3rem 0;
+    }
+
+    .highlight-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .highlight-card:hover { border-color: var(--accent-dim); }
+
+    .highlight-card .icon { font-size: 2rem; margin-bottom: 0.8rem; }
+
+    .highlight-card h3 {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .highlight-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* CTA Link */
+    .cta-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.8rem 1.8rem;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      transition: background 0.3s, color 0.3s;
+      margin-top: 1rem;
+    }
+
+    .cta-link:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    /* Closing Section */
+    .closing {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 8rem 2rem;
+    }
+
+    .closing h2 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .closing p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.85;
+      margin-bottom: 1.5rem;
+    }
+
+    .closing .audria-name {
+      font-family: var(--serif);
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 1.3rem;
+    }
+
+    /* Scroll Animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 4rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sticky-header-inner { gap: 1rem; padding: 0 1rem; }
+      .sticky-logo { font-size: 0.9rem; }
+      .st-label { font-size: 0.5rem; }
+      .st-age { font-size: 0.45rem; }
+      .st-dot { width: 6px; height: 6px; }
+      .media-grid.two-col,
+      .media-grid.three-col { grid-template-columns: 1fr; }
+      .media-item.span-2 { grid-column: span 1; }
+      .media-item.small { max-width: 100%; }
+      .section { padding: 5rem 1.5rem; }
+      .quote-block { padding: 2rem 1.5rem; }
+      .timeline-nav { flex-wrap: wrap; gap: 1rem; justify-content: center; }
+      .timeline-line { display: none; }
+      .timeline-label { font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sticky Header Timeline (appears on scroll) -->
+<div class="sticky-header" id="stickyHeader">
+  <div class="sticky-header-inner">
+    <a href="#" class="sticky-logo">Pranay Jain</a>
+    <div class="sticky-timeline">
+      <div class="sticky-timeline-track"></div>
+      <div class="sticky-timeline-progress" id="timelineProgress"></div>
+      <a href="#school" class="st-node" data-section="school">
+        <div class="st-dot"></div>
+        <span class="st-age">14-16</span>
+        <span class="st-label">Sports</span>
+      </a>
+      <a href="#school" class="st-node" data-section="school-academic">
+        <div class="st-dot"></div>
+        <span class="st-age">17</span>
+        <span class="st-label">Award</span>
+      </a>
+      <a href="#undergrad" class="st-node" data-section="undergrad">
+        <div class="st-dot"></div>
+        <span class="st-age">18-21</span>
+        <span class="st-label">Leadership</span>
+      </a>
+      <a href="#fitzura" class="st-node" data-section="fitzura">
+        <div class="st-dot"></div>
+        <span class="st-age">22</span>
+        <span class="st-label">Fitzura</span>
+      </a>
+      <a href="#usc" class="st-node" data-section="usc">
+        <div class="st-dot"></div>
+        <span class="st-age">23</span>
+        <span class="st-label">USC</span>
+      </a>
+      <a href="#whats-next" class="st-node" data-section="whats-next">
+        <div class="st-dot"></div>
+        <span class="st-age">25</span>
+        <span class="st-label">Audria</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-inner fade-in">
+    <div class="hero-bio">
+      <h1>Pranay Jain</h1>
+      <p>This is my real LinkedIn.</p>
+    </div>
+
+    <div class="timeline-nav">
+      <div class="timeline-line"></div>
+      <a href="#school" class="timeline-node">
+        <div class="timeline-dot"></div>
+        <span class="timeline-age">Age 14-16</span>
+        <span class="timeline-label">Sports</span>
+      </a>
+      <a href="#school" class="timeline-node">
+        <div class="timeline-dot"></div>
+        <span class="timeline-age">Age 17</span>
+        <span class="timeline-label">Academic Award</span>
+      </a>
+      <a href="#undergrad" class="timeline-node">
+        <div class="timeline-dot"></div>
+        <span class="timeline-age">Age 18-21</span>
+        <span class="timeline-label">Leadership</span>
+      </a>
+      <a href="#fitzura" class="timeline-node">
+        <div class="timeline-dot"></div>
+        <span class="timeline-age">Age 22</span>
+        <span class="timeline-label">Fitzura</span>
+      </a>
+      <a href="#usc" class="timeline-node">
+        <div class="timeline-dot"></div>
+        <span class="timeline-age">Age 23</span>
+        <span class="timeline-label">USC</span>
+      </a>
+      <a href="#whats-next" class="timeline-node">
+        <div class="timeline-dot"></div>
+        <span class="timeline-age">Age 25</span>
+        <span class="timeline-label">Audria</span>
+      </a>
+    </div>
+
+    <a href="#school" class="hero-scroll">&#8595;&ensp;Explore</a>
+  </div>
+</section>
+
+<!-- ═══════════ SCHOOL ═══════════ -->
+<div class="divider"></div>
+<section class="section" id="school">
+  <div class="fade-in">
+    <p class="section-label">Chapter One</p>
+    <h2 class="section-title">School</h2>
+    <p class="section-text">
+      Sports defined my school years. I was deeply passionate about athletics, and I believe some of my strongest qualities and core values were forged on the basketball court. Through the end of 11th grade, sports consumed my world. I competed in and won numerous tournaments across multiple levels.
+    </p>
+  </div>
+
+  <div class="media-grid single fade-in">
+    <div class="media-item auto">
+      <img src="School/IMG_7791.jpeg" alt="National newspaper feature" />
+      <div class="media-caption">Featured in a national newspaper for basketball achievements.</div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-top: 3rem;">
+    <p class="section-text">
+      I had the honour of being chosen as the flag bearer of my house, a recognition reserved for the student with the most outstanding sports achievements.
+    </p>
+  </div>
+
+  <div class="media-grid two-col fade-in">
+    <div class="media-item auto">
+      <video src="School/MSBK_Flag.mp4" controls playsinline preload="metadata"></video>
+      <div class="media-caption">Carrying the house flag, representing most sports achievements.</div>
+    </div>
+    <div class="media-item auto">
+      <img src="School/33BF7D26-F7B3-41F6-B63E-763CA5D500D8.JPG" alt="Academic Excellence Award" />
+      <div class="media-caption">Receiving the Award from the Finance Minister of India, Smt. Nirmala Sitharaman. Graduating top of my class.</div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-top: 3rem;">
+    <p class="section-text">
+      Then came 12th grade, and something shifted. A growing love for science and hard questions pulled me in a new direction. For the first time in my life, I actually studied, and I absolutely loved it. That year of focus paid off: I graduated top of my class and received the B.D. Chopra Prize and Academic Excellence Award from the Finance Minister of India.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════ UNDERGRAD ═══════════ -->
+<div class="divider"></div>
+<section class="section" id="undergrad">
+  <div class="fade-in">
+    <p class="section-label">Chapter Two</p>
+    <h2 class="section-title">Undergraduate: IIIT Delhi & Leadership</h2>
+    <p class="section-text">
+      I studied Computer Science at IIIT Delhi, but for me, undergraduate life was all about what happened beyond the classroom. This was the chapter where I discovered leadership, truly discovered it. It started with learning to be on stage, finding my voice in front of a crowd. Then came managing a team of 5, followed by an exceptionally capable team of 30, and eventually, an organisation of 400.
+    </p>
+    <p class="section-text">
+      I enjoyed coding and was pretty decent at it. But I liked learning about startups more. When campus placements came around, I opted out entirely. I firmly believed, and told everyone around me, that coding would be automated in the next 15 years, and that only a handful of the very best engineers in the world would still be relevant. I knew I wasn't in the top 0.01% of engineers. So I chose a different path.
+    </p>
+    <p class="section-aside">
+      Side thought: in this era, having a computer science background is incredibly useful if you want to build a startup.
+    </p>
+  </div>
+
+  <div class="media-grid three-col fade-in">
+    <div class="media-item portrait">
+      <img src="Undergrad- IIITD %26 leadership/154307CE-217B-44FB-BFAF-CBFC2A4E8B79.JPG" alt="Sponsorship Head badge" />
+      <div class="media-caption">Sponsorship Head for Odyssey '20, IIIT Delhi's flagship cultural festival.</div>
+    </div>
+    <div class="media-item portrait">
+      <img src="Undergrad- IIITD %26 leadership/C4F5522A-8DCF-4B4D-B0EE-B40595DFB3FF.JPG" alt="Sponsorship Head jacket" />
+      <div class="media-caption">Wearing the Sponsorship Head jacket at the fest grounds.</div>
+    </div>
+    <div class="media-item portrait">
+      <img src="Undergrad- IIITD %26 leadership/75813BA4-E9D3-43A2-A5EF-89877D6F68E6.JPG" alt="With family" />
+      <div class="media-caption">A proud moment with family after the award ceremony.</div>
+    </div>
+  </div>
+
+  <div class="media-grid two-col fade-in" style="margin-top: 1.5rem;">
+    <div class="media-item auto">
+      <img src="Undergrad- IIITD %26 leadership/87C97FA6-8849-4C38-A455-737C44DF544E.JPG" alt="Leading an event on stage" />
+      <div class="media-caption">Leading an event on stage, where I learned to command a room and connect with an audience.</div>
+    </div>
+    <div class="media-item auto">
+      <img src="Undergrad- IIITD %26 leadership/D40F059D-B35B-4429-8151-55245E381F21.JPG" alt="On stage hosting" />
+      <div class="media-caption">Hosting on stage during college events.</div>
+    </div>
+  </div>
+
+  <div class="media-grid single fade-in" style="margin-top: 1.5rem;">
+    <div class="media-item auto">
+      <video src="Undergrad- IIITD %26 leadership/E5D73E1B-0B9E-466A-9E70-A1461320A398.MP4" controls playsinline preload="metadata"></video>
+      <div class="media-caption">Backstage at Odyssey, the festival I helped fund as Sponsorship Head. We secured enough sponsorship to scale the event to an audience of over 20,000, the largest the college had ever seen.</div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-top: 3rem;">
+    <p class="section-text">
+      Every year, one student from the entire college receives the Dean's Award for Leadership, and I was honoured to be that recipient.
+    </p>
+  </div>
+
+  <div class="media-grid two-col fade-in">
+    <div class="media-item wide">
+      <img src="Undergrad- IIITD %26 leadership/39B91C95-6857-4D56-BC11-8D5E521A9A78.JPG" alt="Receiving Dean's Award" />
+      <div class="media-caption">Receiving the Dean's Award for Leadership from the Dean of Student Affairs.</div>
+    </div>
+    <div class="media-item wide">
+      <img src="Undergrad- IIITD %26 leadership/20300D15-657A-439F-94FB-90340834CF12.JPG" alt="Dean's Award plaque" />
+      <div class="media-caption">With the Dean's Award plaque on campus.</div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-top: 3rem;">
+    <p class="section-text">
+      Despite a college life packed with extracurriculars, I graduated with a B.Tech Honours degree, an achievement that approximately 40 students out of a batch of 460 earned.
+    </p>
+  </div>
+
+  <div class="media-grid two-col fade-in">
+    <div class="media-item auto">
+      <video src="Undergrad- IIITD %26 leadership/IMG_9950.mp4" controls playsinline preload="metadata"></video>
+      <div class="media-caption">Receiving the B.Tech Honours award from the Director of the university.</div>
+    </div>
+    <div class="media-item auto">
+      <img src="Undergrad- IIITD %26 leadership/IMG_9990.jpeg" alt="Honours gift box" />
+      <div class="media-caption">The "Graduating with Honours from IIITD" commemorative set, Class of 2023.</div>
+    </div>
+  </div>
+
+  <div class="media-grid two-col fade-in" style="margin-top: 1.5rem;">
+    <div class="media-item portrait">
+      <img src="Undergrad- IIITD %26 leadership/IMG_0173.jpeg" alt="Honours keepsake" />
+      <div class="media-caption">The full Honours keepsake from IIIT Delhi.</div>
+    </div>
+    <div class="media-item auto">
+      <img src="Undergrad- IIITD %26 leadership/IMG_3142.jpeg" alt="Sam Altman visit" />
+      <div class="media-caption">Sam Altman's visit to IIIT Delhi, a memorable moment on campus.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FITZURA ═══════════ -->
+<div class="divider"></div>
+<section class="section" id="fitzura">
+  <div class="fade-in">
+    <p class="section-label">Chapter Three</p>
+    <h2 class="section-title">Fitzura: My First Startup</h2>
+    <p class="section-text">
+      Fitzura was my first startup, built with two close friends. The concept was simple but bold: track users' fitness activity, assign them points based on performance, and let them unlock exclusive apparel collections only after hitting certain milestones. Think of it as a battle pass, but for fitness.
+    </p>
+    <p class="section-text">
+      People show off their wealth through the brands they wear. We wanted to create a world where they could show off their level of fitness instead. The vision was to partner with brands like Adidas and Nike to launch exclusive collections, positioning Fitzura as the platform that tracks fitness, assigns scores, and unlocks apparel when certain levels are reached.
+    </p>
+  </div>
+
+  <div class="media-grid two-col fade-in">
+    <div class="media-item">
+      <img src="Fitzura Startup/IMG_4902.jpeg" alt="Fitzura apparel lineup" />
+      <div class="media-caption">The first Fitzura collection: "Athlete," "Passion," and "Take Pride in Passion" designs.</div>
+    </div>
+    <div class="media-item">
+      <img src="Fitzura Startup/IMG_5011.jpeg" alt="Fitzura brand tag" />
+      <div class="media-caption">The Fitzura brand tag: "Take Pride in Passion."</div>
+    </div>
+  </div>
+
+  <div class="media-grid three-col fade-in" style="margin-top: 1.5rem;">
+    <div class="media-item">
+      <img src="Fitzura Startup/IMG_4904 2.jpeg" alt="Fitzura closeup" />
+      <div class="media-caption">A closer look at the four debut Fitzura designs.</div>
+    </div>
+    <div class="media-item">
+      <img src="Fitzura Startup/IMG_5023.jpeg" alt="University showcase" />
+      <div class="media-caption">Presenting Fitzura at the IIIT Delhi entrepreneurship showcase.</div>
+    </div>
+    <div class="media-item">
+      <img src="Fitzura Startup/IMG_4613.jpeg" alt="Running event" />
+      <div class="media-caption">Living the Fitzura ethos, competing and pushing fitness limits.</div>
+    </div>
+  </div>
+
+  <div class="media-grid two-col fade-in" style="margin-top: 1.5rem;">
+    <div class="media-item portrait">
+      <img src="Fitzura Startup/IMG_6114.jpeg" alt="Running with Adidas Runners" />
+      <div class="media-caption">Gaining different interests and running with Adidas Runners club, ways to stay closer to the target market and understand the user's perspective for Fitzura.</div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-top: 3rem;">
+    <p class="section-text">
+      We were three computer science students building this in college, passionate about fitness but lacking the fashion industry connections needed to scale. Eventually, we moved on to pursue other opportunities. But the spirit of Fitzura lives on.
+    </p>
+    <a href="https://www.instagram.com/reel/ChITn1BjcNt0GutvtlKaEri8cNm-tOXKWieLEI0/?igsh=MTMzb2g4a2g0YTQ3aw==" target="_blank" rel="noopener" class="cta-link">
+      Watch the Fitzura Reel &rarr;
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════ USC MARSHALL ═══════════ -->
+<div class="divider"></div>
+<section class="section" id="usc">
+  <div class="fade-in">
+    <p class="section-label">Chapter Four</p>
+    <h2 class="section-title">Graduate School: USC Marshall</h2>
+    <p class="section-text">
+      At USC Marshall School of Business, I continued to pursue entrepreneurship with the same intensity I'd brought to everything before it.
+    </p>
+    <p class="section-text">
+      In one of my classes called Venture Lab, when everyone was introducing themselves with their name and one quick investment thesis, I said my name and admitted I didn't have a solid investment thesis yet. But I did share a conviction: in the next 5 to 10 years, the typical SaaS wouldn't be a hot investment thesis anymore, unless it has network effects or something similarly defensible.
+    </p>
+  </div>
+
+  <div class="highlights fade-in">
+    <div class="highlight-card">
+      <div class="icon">&#127942;</div>
+      <h3>VCIC Winner</h3>
+      <p>Won the Venture Capital Investment Competition at USC Marshall, competing against experienced MBA candidates.</p>
+    </div>
+    <div class="highlight-card">
+      <div class="icon">&#128640;</div>
+      <h3>New Venture Seed</h3>
+      <p>Semifinalist with Work4: helping entry-level software job-seekers stand out and providing employers with pre-assessed candidates.</p>
+    </div>
+    <div class="highlight-card">
+      <div class="icon">&#128218;</div>
+      <h3>TA: Founder's Dilemmas</h3>
+      <p>Handpicked to be a Teaching Assistant for one of my favourite courses, working closely with the professor.</p>
+    </div>
+  </div>
+
+  <div class="media-grid three-col fade-in">
+    <div class="media-item portrait">
+      <img src="Grad- USC Marshall/VCIC.png" alt="VCIC win" />
+      <div class="media-caption">Our team after winning first place at the Venture Capital Investment Competition at USC Marshall.</div>
+    </div>
+    <div class="media-item auto">
+      <img src="Grad- USC Marshall/IMG_7546.jpeg" alt="With cofounder Ben" />
+      <div class="media-caption">With my cofounder Ben. Together we built Work4 and competed as semifinalists in the New Venture Seed Competition.</div>
+    </div>
+    <div class="media-item auto">
+      <img src="Grad- USC Marshall/IMG_4992.jpeg" alt="With Prof. Dan Wadhwani" />
+      <div class="media-caption">With Prof. Dan Wadhwani, my professor, mentor, and the person who believed in my entrepreneurial journey.</div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-top: 3rem;">
+    <p class="section-text">
+      With Work4, we were helping entry-level software job-seekers stand out by pre-assessing their skills and connecting them with employers. But we realised the entry-level software job market in the US was shrinking, and we were facing a tough question: do we want to build in a space that is contracting and uncertain? Eventually, we decided to step away from it.
+    </p>
+  </div>
+
+  <div class="quote-block fade-in">
+    <p>
+      Pranay is a smart, driven, and resourceful entrepreneur. He immediately demonstrated his knowledge and leadership, standing out in a class of 50 students.
+    </p>
+    <p style="margin-top: 1rem;">
+      He is humble and coachable, capable of listening effectively to guidance and incorporating it quickly. At the same time, he has a quiet determination that is crucial to entrepreneurial performance. I have seen him persevere through setbacks and get things done when others would have quit.
+    </p>
+    <p style="margin-top: 1rem;">
+      In short, Pranay is among the very best of the hundreds of entrepreneurship students I have coached and mentored. I have no doubt that he is going to do something great.
+    </p>
+    <p class="quote-author">Prof. Dan Wadhwani, USC Marshall School of Business</p>
+  </div>
+</section>
+
+<!-- ═══════════ MENTORSHIP ═══════════ -->
+<div class="divider"></div>
+<section class="section" id="mentorship">
+  <div class="fade-in">
+    <p class="section-label">Throughout</p>
+    <h2 class="section-title">Mentorship</h2>
+    <p class="section-text">
+      I love mentoring. Adventurous and ambitious paths are tough and challenging, and it often happens that those who are a few steps behind you are walking the same ones you once did. In those moments, I find deep fulfilment in helping them navigate the journey.
+    </p>
+  </div>
+
+  <div class="media-grid two-col fade-in">
+    <div class="media-item portrait small">
+      <img src="Mentorship/CEA84CC0-E8E9-47C5-8917-32A344E5A7A6.JPG" alt="Mentoring mentees at breakfast" />
+      <div class="media-caption">With my undergraduate mentees, taking them out to my favourite breakfast spot in the city.</div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-top: 3rem;">
+    <p class="section-text">
+      Eight years after attending Inme Camp, a camp that instilled some of the most important values in my life, I went back as a volunteer to inspire those same values in the next generation. And yes, I'm always the kids' favourite.
+    </p>
+  </div>
+
+  <div class="media-grid three-col fade-in">
+    <div class="media-item">
+      <img src="Mentorship/IMG_2454.jpeg" alt="Inme Camp group" />
+      <div class="media-caption">Back at Inme Camp after 8 years, volunteering and giving back to the community that shaped me.</div>
+    </div>
+    <div class="media-item">
+      <img src="Mentorship/IMG_2527.jpeg" alt="Camp cycling" />
+      <div class="media-caption">Adventures with the camp crew, mountain biking through the trails.</div>
+    </div>
+    <div class="media-item">
+      <img src="Mentorship/IMG_3006.jpeg" alt="Camp outing" />
+      <div class="media-caption">Out and about with fellow camp volunteers.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ WHAT'S NEXT ═══════════ -->
+<div class="divider"></div>
+<section class="closing" id="whats-next">
+  <div class="fade-in">
+    <p class="section-label">What's Next</p>
+    <h2>The Journey to Come</h2>
+    <p>
+      From basketball courts to boardrooms, every chapter has been building toward this. The next part of my journey is fully entrepreneurial: building high-growth startups that create real impact.
+    </p>
+    <p>
+      Right now, I'm building <span class="audria-name">Audria</span>, and this is just the beginning.
+    </p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2026 Pranay Jain. All rights reserved.</p>
+</footer>
+
+<!-- Scripts -->
+<script>
+  // Fade-in observer
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Sticky header with smooth scroll-linked progress
+  const hero = document.getElementById('hero');
+  const sticky = document.getElementById('stickyHeader');
+  const progressBar = document.getElementById('timelineProgress');
+  const stNodes = document.querySelectorAll('.st-node');
+
+  // Each timeline node maps to a scroll anchor section
+  // nodes: sports(0) -> school, award(1) -> school-bottom, leadership(2) -> undergrad,
+  //        fitzura(3) -> fitzura, usc(4) -> usc, audria(5) -> whats-next
+  const nodeAnchors = [
+    document.getElementById('school'),
+    document.getElementById('school'),       // award is mid-school
+    document.getElementById('undergrad'),
+    document.getElementById('fitzura'),
+    document.getElementById('usc'),
+    document.getElementById('whats-next')
+  ];
+
+  // Get section boundaries for smooth interpolation
+  function getSectionTops() {
+    const school = document.getElementById('school');
+    const undergrad = document.getElementById('undergrad');
+    const fitzura = document.getElementById('fitzura');
+    const usc = document.getElementById('usc');
+    const mentorship = document.getElementById('mentorship');
+    const whatsNext = document.getElementById('whats-next');
+    const footer = document.querySelector('footer');
+
+    // Return [start, end] pairs for each timeline node
+    // The progress bar interpolates smoothly across these ranges
+    return [
+      school.offsetTop,                                         // 0: Sports
+      school.offsetTop + school.offsetHeight * 0.5,             // 1: Award (midpoint of school)
+      undergrad.offsetTop,                                      // 2: Leadership
+      fitzura.offsetTop,                                        // 3: Fitzura
+      usc.offsetTop,                                            // 4: USC
+      whatsNext.offsetTop                                       // 5: Audria
+    ];
+  }
+
+  function updateStickyHeader() {
+    const heroBottom = hero.getBoundingClientRect().bottom;
+
+    if (heroBottom < 0) {
+      sticky.classList.add('visible');
+    } else {
+      sticky.classList.remove('visible');
+    }
+
+    const scrollY = window.scrollY + 100;
+    const tops = getSectionTops();
+    const totalNodes = tops.length;
+
+    // Find which segment we're in and interpolate
+    let progress = 0;
+    if (scrollY <= tops[0]) {
+      progress = 0;
+    } else if (scrollY >= tops[totalNodes - 1]) {
+      progress = 100;
+    } else {
+      for (let i = 0; i < totalNodes - 1; i++) {
+        if (scrollY >= tops[i] && scrollY < tops[i + 1]) {
+          const segFraction = (scrollY - tops[i]) / (tops[i + 1] - tops[i]);
+          progress = ((i + segFraction) / (totalNodes - 1)) * 100;
+          break;
+        }
+      }
+    }
+
+    progressBar.style.width = progress + '%';
+
+    // Light up nodes that the progress has passed
+    const nodePercents = tops.map((_, i) => (i / (totalNodes - 1)) * 100);
+    stNodes.forEach((n, i) => {
+      n.classList.toggle('active', progress >= nodePercents[i] - 0.5);
+    });
+  }
+
+  window.addEventListener('scroll', updateStickyHeader, { passive: true });
+  window.addEventListener('resize', updateStickyHeader, { passive: true });
+  updateStickyHeader();
+</script>
+
+</body>
+</html>
