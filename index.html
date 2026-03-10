@@ -585,11 +585,6 @@
         <span class="st-age">14-16</span>
         <span class="st-label">Sports</span>
       </a>
-      <a href="#school" class="st-node" data-section="school-academic">
-        <div class="st-dot"></div>
-        <span class="st-age">17</span>
-        <span class="st-label">Award</span>
-      </a>
       <a href="#undergrad" class="st-node" data-section="undergrad">
         <div class="st-dot"></div>
         <span class="st-age">18-21</span>
@@ -628,11 +623,6 @@
         <div class="timeline-dot"></div>
         <span class="timeline-age">Age 14-16</span>
         <span class="timeline-label">Sports</span>
-      </a>
-      <a href="#school" class="timeline-node">
-        <div class="timeline-dot"></div>
-        <span class="timeline-age">Age 17</span>
-        <span class="timeline-label">Academic Award</span>
       </a>
       <a href="#undergrad" class="timeline-node">
         <div class="timeline-dot"></div>
@@ -995,11 +985,10 @@
   const stNodes = document.querySelectorAll('.st-node');
 
   // Each timeline node maps to a scroll anchor section
-  // nodes: sports(0) -> school, award(1) -> school-bottom, leadership(2) -> undergrad,
-  //        fitzura(3) -> fitzura, usc(4) -> usc, audria(5) -> whats-next
+  // nodes: sports(0) -> school, leadership(1) -> undergrad,
+  //        fitzura(2) -> fitzura, usc(3) -> usc, audria(4) -> whats-next
   const nodeAnchors = [
     document.getElementById('school'),
-    document.getElementById('school'),       // award is mid-school
     document.getElementById('undergrad'),
     document.getElementById('fitzura'),
     document.getElementById('usc'),
@@ -1020,11 +1009,10 @@
     // The progress bar interpolates smoothly across these ranges
     return [
       school.offsetTop,                                         // 0: Sports
-      school.offsetTop + school.offsetHeight * 0.5,             // 1: Award (midpoint of school)
-      undergrad.offsetTop,                                      // 2: Leadership
-      fitzura.offsetTop,                                        // 3: Fitzura
-      usc.offsetTop,                                            // 4: USC
-      whatsNext.offsetTop                                       // 5: Audria
+      undergrad.offsetTop,                                      // 1: Leadership
+      fitzura.offsetTop,                                        // 2: Fitzura
+      usc.offsetTop,                                            // 3: USC
+      whatsNext.offsetTop                                       // 4: Audria
     ];
   }
 
